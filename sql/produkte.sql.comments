@@ -1,0 +1,37 @@
+-- Erstelle DB + Tabellen (MariaDB)
+CREATE DATABASE IF NOT EXISTS produkte CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+USE produkte;
+
+CREATE TABLE IF NOT EXISTS items (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(255) NOT NULL,				-- Produktbezeichnung
+  user_id INT NULL,							-- Benutzer der Produkt angelegt hat.
+  short VARCHAR(255) NOT NULL,				-- Beschreibung (Kurztext)
+  description TEXT NOT NULL,				-- Beschreibung (Langtext, kann HTML beinhalten.)
+  image VARCHAR(255) NOT NULL,				-- Bild
+  barcode VARCHAR(255) UNIQUE,				-- Barcode
+
+  price DECIMAL(10, 2) NOT NULL,			-- Preis
+  cost DECIMAL(10, 2),					-- Einkaufspreis
+  stock INT NOT NULL,					-- Anzahl 
+  sold INT NULL,					-- Verkauft
+
+  location_id INT NULL, 				-- Lagerort (Table location)
+  category ENUM('Kleidung','Kinder','Wohnen','Schlafen','Haushalt','Kleinmöbel','Elektro'),
+
+  subcategory VARCHAR(255),					-- ENUM('Kleid','Rock','Pullover','Bluse','Hemd','T-Shirt','Hose','Schuhe'),
+  gender ENUM('Herren','Damen','Kinder','Sonstiges'),
+  state ENUM('sehr gut','gut','mittel','schlecht','sehr schlecht'),
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+);
+
+CREATE TABLE IF NOT EXISTS location (
+	id INT AUTO_INCREMENT PRIMARY KEY,
+	name VARCHAR(255) NOT NULL,				-- ??? eventuell nicht notwendig.
+	barcode VARCHAR(255) NULL,				-- "1-1-10-10" (department-shelf-pos)
+	shelf INT NULL,							-- Shelf number "1" for "Regal 1"
+	pos VARCHAR(10) NULL,					-- Position of shelf i.e. "10-10" (row/column)
+	department ENUM('Kleidung','Kinder','Wohnen','Schlafen','Haushalt','Kleinmöbel','Elektro'),
+);
+

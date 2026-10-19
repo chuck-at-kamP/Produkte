@@ -1,0 +1,14 @@
+<svg id="animate" width="100" height="100" viewbox="0 0 100 100"
+	xmlns="http://www.w3.org/2000/svg"
+	xmlns:xlink="http://www.w3.org/1999/xlink">
+
+   <circle cx="60" cy="70" r="15" stroke="black" stroke-width="4" fill="white" />
+   <path fill="orange" style="stroke:black;" d="M54,14 l10,10 10,20 20,15 
+		q5,18 -15,25 l-20,-12 -25,-2 -10,-5" />
+   <ellipse rx="10" ry="30" cx="40" cy="40" transform="rotate(30,40,40)"/>
+   <!-- <path fill="orange" d="M40,30 L50,10 60,30 50,25 Z"/>-->
+   <path stroke-width="2" stroke="red" fill="white" d="M40,10 q-20,10 -27,45" />
+   <path stroke-width="2" stroke="red" fill="white" d="M30,8 q-20,10 -24,40" />
+   <path stroke-width="2" stroke="red" fill="white" d="M17,8 q-10,5 -14,20" />
+
+</svg>

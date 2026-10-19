@@ -1,0 +1,122 @@
+<?php
+/**
+ * items.php - Item selection. Users can select existing items.
+ */
+require_once __DIR__ . "/src/Data.php";
+require __DIR__ . '/autoload.php';
+use MK\DBT;
+use MK\Logger;
+use MK\Helper;
+use MK\Session;
+$config = include 'config.php';
+
+Logger::$LOGFILE = $config['log'];
+Logger::$DEBUG = true;
+
+Logger::info(__LINE__ . " items.php Start -------------------------------------------------------------");
+$app = 'items.php';
+$sess = new Session('items.php');
+$user = $sess->getFullname();
+$sess->loggedin();
+$db = new DBT($config['sql'],$config['fetchAll'],$config['db']);
+
+Logger::info(__LINE__ . " $app IN Session='" . $sess . "', POST=" . json_encode($_POST));
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'select') {
+    $item_id = (int)($_POST['item_id'] ?? 0);
+
+    $ar['category']    = trim($_POST['category'] ?? '');
+    $ar['subcategory'] = trim($_POST['subcategory'] ?? '');
+    
+    if ($item_id > 0) {
+		$ret = $db->fetch('items_id', [$item_id]); // Check if item exists
+		if ($ret['status'] === 'success') {
+			$ret = $db->fetch('items_id', [$item_id,'waiting']);
+			header('Location: index.php'); // Redirect to game
+			exit;
+		}
+    }
+}
+$ret = $db->fetch('items_list', []); // Get all items
+$items = $ret['data'];
+
+$data = new Data($db);
+$enums = $data->getEnums($config['subcategory']);
+
+Logger::info(__LINE__ . " $app Items: " . json_encode($items));
+?>
+
+<!-- ========================= HTML ========================= -->
+<?php include 'src/head.php' ?>
+
+<table class="content">
+    <tr><td class="title" colspan=2><h1>Auswahl Item</h1></td></tr>
+    
+<!-- ======================== Fehlerausgabe ======================================= -->
+<?php if (!empty($error)): ?>
+<tr><td class="error"><p style="color: red;"><?= Helper::e($error) ?></p></td></tr>
+<?php endif; ?>
+    
+<!-- ======================= Show ENUMs in Select-Option ============================ -->
+<?php include 'src/select.php' ?>
+
+<!--
+	<tr><td class="input"><label>Category:</label></td>
+		<td>
+		<select name="category" onChange='this.form.submit();'>
+	<?php foreach($enums['category'] as $e) { ?>
+		<option value="<?php echo $e; ?>" <?php if($e === $ar[$cat]) { echo "selected"; } ?>><?php echo $e; ?></option>
+	<?php } ?>
+	</select>
+	</td></tr>
+	<tr><td class="input"><label>Subcategory:</label></td>
+		<td>
+		<select name="subcategory" onChange='this.form.submit();'>
+	<?php foreach($enums['subcategory'] as $e) { ?>
+		<option value="<?php echo $e; ?>" <?php if($e === $ar[$cat]) { echo "selected"; } ?>><?php echo $e; ?></option>
+	<?php } ?>
+	</select>
+	</td></tr>
+
+	<tr><td class="input"><label>Im Bestand:</label></td><td>
+		<input type="radio" id="stock_ja" name="in_stock" value="stock_ja" checked="checked"><label for="stock_ja">Ja</label>
+		<input type="radio" id="stock_no" name="in_stock" value="stock_no"><label for="stock_no">Nein</label>
+		<input type="radio" id="stock_all" name="in_stock" value="stock_all"><label for="stock_all">Alle</label> 
+	</td></tr>
+-->
+
+<!-- ======================= Bestehende Items auswählen ======================= -->
+
+<form method="post" action="items.php">
+<?php if (!empty($items)) { ?>
+	<tr>
+		<!-- <td class="input"><label>Items: </label></td> -->
+	<td colspan=2>
+	<select name="select_item" size="10">
+		<?php foreach ($items as $item) { ?>
+			<option value="<?php echo Helper::e($item['id']); ?>"><?php echo Helper::e($item['updated_at'])." (".Helper::e($item['id']).") ".Helper::e($item['name']); ?></option>
+		<?php } ?>
+	</select></td></tr>
+<?php } ?>
+
+<!-- ====================== Anzeige ========================= -->
+
+	<tr><td colspan="2">
+	<table class="data"><tr><th>Key</th><th>Value</th></tr>
+		<?php foreach ($items as $item) { ?>
+			<tr><td><?php echo Helper::e($item['id']); ?></td>
+				<td><?php echo Helper::e($item['updated_at']); ?></td>
+				<td><?php echo Helper::e($item['id']); ?></td>
+				<td><?php echo Helper::e($item['name']); ?></td>
+		<?php } ?>
+	</table>
+	</td></tr>
+
+<!-- ====================== Buttons ========================= -->
+	<tr><td class="button" colspan=2>
+		<button type="submit" name="choose" value="play">OK</button>
+		<button type="reset" name="choose" value="cancel">Cancel</button>
+	</td></tr>
+    </form>
+</table>
+
+<?php include 'src/foot.php' ?>

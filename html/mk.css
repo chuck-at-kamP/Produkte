@@ -1,0 +1,93 @@
+
+html, body { margin: 0; display: flex; justify-content: center; align-items: center; }
+body { display: table-cell; border:2px solid black; padding:0px; margin-top:30px; }
+
+/* ################### Allgemeine Einstellungen ############### */
+table { width:100%; }
+td { text-align:left; }
+button { padding: 5px; background-color:orange; color:white; font-size: larger; }
+h1	{ border-bottom: 4px solid orange; text-align:center; padding:0px; margin:0px; }
+h2	{ border-bottom: 2px solid orange; text-align:center; padding:0px; margin:0px; }
+label { text-align:left; }
+input { text-align:left; }
+select {
+	-moz-appearance: none;
+	-webkit-appearance: none;
+	-appearance: none;
+	-border: none;
+
+	padding-left: 10px;
+	width: 100%;
+	background: #f0f0f0;
+	color: black;
+	font-family: 'Open Sans', sans-serif;
+	font-size: 16px;
+	font-weight: normal;
+
+	border: 1px solid orange;
+	box-shadow: 2px 2px 5px 1px rgba(0,0,0,0.3);
+	border-radius: 5px;
+
+	cursor: pointer;
+}
+option { color: black; background-color:white; padding:2px; margin:2px; font-size:12px; }
+
+/* ######################## head.php ####################### */
+
+table.title { width:100%; border:none; background-color:orange; }
+table.title td { border:none }
+button#menu { border:none; font-weight:bold; font-size:24px; }
+table.title td.menu  { width:10%; padding:0px; margin:0px; }
+table.title td.title { width:40%; padding:0px; margin:0px; }
+table.title td.user  { width:30%; padding:0px; margin:0px; }
+table.title td.image { width:10%; padding:0px; margin:0px; vertical-align:center; padding-top:5px; }
+table.title td.title h1 { color:white; }
+img.title_image { width:40px; padding-right:0px; padding-top:auto; padding-bottom:auto; }
+
+/* ######################## foot.php ####################### */
+h2.footer { border-top:3px solid orange; padding:5px; margin-top:10px; }
+
+/* ##################### Structure index.php ################################# */
+/* ---- Struktur ---- */
+table.content    { width:100%; text-align:left; margin-top:0px; margin-bottom:0px; white-space:nowrap; }
+table.content td { width:50%; margin:0px; padding:10px; vertical-align:top; text-align:center; }
+table.content td.input  { text-align:left; vertical-align: top; }
+table.content td.title  { text-align:center; }
+table.content td.error  { text-align:center; }
+table.content td.filter {}
+table.content td.select {}
+table.content td.anzeige {}
+table.content td.anzeige_html {}
+
+input.short { width:97%; }
+input.desc { width:97%; white-space:wrap; }
+
+/* ---- Select ---- (src/select.php) */
+div.select_container { min-width:250px; margin:0px; padding:0px; }
+table.select,table.select td { margin:0px; padding:0px; }
+select.choice_list { background-color:white; min-width:200px; }
+select.choice_list option { background-color:white; color:black; min-width:200px; }
+select.choice_list option:checked { background-color:orange; color:white; }
+select.choice_list option.first_element { background-color:lightgrey; }
+
+/* ---- List-Data ---- */
+div.list_container { width:100%; margin:0px; padding:0px; }
+table.data { border:1px solid black; border-collapse:collapse; width:90%; margin:auto; }
+table.data th { border: 1px solid black; border-collapse:collapse; padding:4px; }
+table.data td { border: 1px solid black; border-collapse:collapse; padding:2px; margin:0px; font-size:16px; text-align:left; }
+table.data td.val { font-weight:bold; color:darkgreen; }
+
+/* ---- Filter ---- (src/filter.php) */
+div.filter_container { width:100%; margin:0px; padding:0px; }
+table.filter { width:100%; text-align:left; margin-top:0px; margin-bottom:0px; white-space:nowrap; }
+table.filter td    { padding:10px; }
+
+/* ---- Present ---- (src/present.php) HTML Anzeige */
+div.present_container { width:100%; margin:0px; padding:0px; }
+table.present { width:100%; margin:auto; text-align:left; white-space:nowrap; 
+	border:1px solid black; padding:10px;
+}
+table.present td    { width:300px; padding:10px; border:none; text-align:left; vertical-align:top; white-space:wrap; }
+table.present td.description { text-align:justify; }
+
+/* ######################################################################## */
