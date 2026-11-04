@@ -10,6 +10,10 @@
  *   WC_KEY, WC_SECRET  WooCommerce > Einstellungen > Erweitert > REST-API (Lesen/Schreiben)
  *   IMAGE_BASE_URL     öffentliche URL, unter der die Bilder aus items.image erreichbar sind,
  *                      z.B. https://produkte.example.de/uploads/
+ *   IMAGE_DIR          (optional) lokaler Ordner der Bilder, Standard: ./uploads
+ *   WP_USER, WP_APP_PASS  (optional) WordPress-Benutzer + Application Password. Wenn gesetzt,
+ *                      werden Bilder per POST /wp/v2/media hochgeladen und per "id" am Produkt
+ *                      verknüpft; sonst wird IMAGE_BASE_URL als "src" verwendet.
  *
  * Produkte werden über die SKU ("item-<id>") erkannt: vorhanden -> Update, sonst -> Neu anlegen.
  */
@@ -39,6 +43,9 @@ $wcUrl   = rtrim(cfg('WC_URL'), '/');
 $wcKey   = cfg('WC_KEY');
 $wcSec   = cfg('WC_SECRET');
 $imgBase = rtrim(cfg('IMAGE_BASE_URL', ''), '/');
+$imgDir  = rtrim(cfg('IMAGE_DIR', __DIR__ . '/uploads'), '/');
+$wpUser  = cfg('WP_USER', '');
+$wpPass  = cfg('WP_APP_PASS', '');
 
 function wc(string $method, string $path, array $query = [], ?array $body = null): array
 {
@@ -67,6 +74,48 @@ function wc(string $method, string $path, array $query = [], ?array $body = null
         throw new RuntimeException("HTTP $code bei $method $path: " . substr($res, 0, 300));
     }
     return $data;
+}
+
+// Lädt eine lokale Datei in die WordPress-Mediathek und liefert die Media-ID.
+// Gibt null zurück, wenn die Datei fehlt (dann greift der Fallback über "src").
+function uploadImage(string $file, bool $dry): ?int
+{
+    global $wcUrl, $wpUser, $wpPass;
+    static $cache = [];
+    if (isset($cache[$file])) {
+        return $cache[$file];
+    }
+    if (!is_file($file)) {
+        fwrite(STDERR, "Bilddatei nicht gefunden: $file\n");
+        return null;
+    }
+    if ($dry) {
+        return null;
+    }
+    $mime = mime_content_type($file) ?: 'application/octet-stream';
+    $ch   = curl_init($wcUrl . '/wp-json/wp/v2/media');
+    curl_setopt_array($ch, [
+        CURLOPT_POST           => true,
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_USERPWD        => "$wpUser:$wpPass",
+        CURLOPT_HTTPHEADER     => [
+            'Content-Type: ' . $mime,
+            'Content-Disposition: attachment; filename="' . basename($file) . '"',
+        ],
+        CURLOPT_POSTFIELDS     => file_get_contents($file),
+        CURLOPT_TIMEOUT        => 120,
+    ]);
+    $res  = curl_exec($ch);
+    $code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    if ($res === false) {
+        throw new RuntimeException('cURL: ' . curl_error($ch));
+    }
+    curl_close($ch);
+    $data = json_decode($res, true);
+    if ($code >= 400 || empty($data['id'])) {
+        throw new RuntimeException("HTTP $code beim Bild-Upload: " . substr($res, 0, 300));
+    }
+    return $cache[$file] = (int)$data['id'];
 }
 
 // Kategorie (ggf. mit Elternkategorie) suchen oder anlegen, Ergebnis wird gecacht.
@@ -141,8 +190,13 @@ foreach ($stmt as $it) {
         $id = $existing[0]['id'] ?? null;
 
         // Bild nur beim Neuanlegen oder wenn noch keines gesetzt ist hochladen.
-        if ($imgBase !== '' && $it['image'] !== '' && ($id === null || empty($existing[0]['images']))) {
-            $product['images'] = [['src' => $imgBase . '/' . rawurlencode($it['image'])]];
+        if (($imgBase !== '' || $wpUser !== '') && $it['image'] !== '' && ($id === null || empty($existing[0]['images']))) {
+            $mediaId = $wpUser !== '' ? uploadImage($imgDir . '/' . $it['image'], $dryRun) : null;
+            if ($mediaId) {
+                $product['images'] = [['id' => $mediaId]];
+            } elseif ($imgBase !== '') {
+                $product['images'] = [['src' => $imgBase . '/' . rawurlencode($it['image'])]];
+            }
         }
 
         if ($dryRun) {
