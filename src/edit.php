@@ -1,5 +1,5 @@
 
-<form method="post" action="<?php echo $action;?>" onSubmit="beforeSubmit()" enctype="multipart/form-data">
+<form method="post" id="edit-form" action="<?php echo $action;?>" onSubmit="beforeSubmit()" enctype="multipart/form-data">
    	<input type="hidden" name="action" value="<?php echo $action; ?>">
    	<input type="hidden" name="id" value="<?php echo $item['id']; ?>">
 <table class="edit">
@@ -8,18 +8,19 @@
 				value="<?php echo $item['name']; ?>" onChange="add('name')">
         </td></tr>
         <tr><td class="input"><label>Kurztext * : </label></td><td>
-			<input type="text" name="short" placeholder="z.B. Größe M, guter Zustand" value="<?php echo $item['short']; ?>" class="short" onChange="add('short')">
+			<input type="text" name="short" placeholder="z.B. Größe M, guter Zustand" value="<?php echo $item['short']; ?>" class="short" onChange="add('short')" required>
         	</td></tr>
         <tr><td class="input"><label>Beschreibung * (Html): </label></td><td colspan=3>
 			<textarea type="text" name="description"
-				value="" class="desc" cols="65" rows="7" onChange="add('description')"><?php echo $item['description']; ?></textarea>
+				value="" class="desc" cols="65" rows="7" onChange="add('description')" required><?php echo $item['description']; ?></textarea>
         </td></tr>
         <tr><td class="input"><label>Image * : </label></td><td colspan=3 style="text-align:left;">
-			<input type="file" id="item_image" name="image" onchange="add('image');" onclick="this.value='';"/>
+			<input type="file" name="image" onchange="add('image')" required>
 			<span style="font-size:20px; color:darkgreen; margin-left:10px;">File: <?php echo $item['image']; ?></span>
         </td></tr>
-        <tr><td class="input"><label>Barcode: </label></td><td>
-			<input type="text" name="barcode" placeholder="Barcode" value="<?php echo $item['barcode']; ?>" onChange="add('barcode')">
+        <tr><td class="input"><label>Barcode: </label></td><td colspan=3 style="text-align:left;";>
+			<input type="text" name="barcode" placeholder="Barcode" value="<?php echo $item['barcode']; ?>" disabled readonly>
+			<span> (<?php echo $item['category'];?>-<?php echo $item['subcategory'];?>-<?php echo $item['id'];?>)</span>
         </td></tr>
         <tr><td class="input"><label>Preis * (€): </label></td><td>
 			<input type="text" name="price" placeholder="z.B. 10,20" value="<?php echo $item['price']; ?>" onChange="add('price')" required>
@@ -39,19 +40,22 @@
 <td class="input"><label><?php echo ucfirst($cat); ?><?php if($cat=== 'category' || $cat === 'subcategory') echo " * "; ?>:</label></td>
 		<td>
 		<select 
-			name="<?php echo $cat; ?>" 
-			<?php if($cat === 'category') echo "onChange='this.form.submit();'"; ?>
-			<?php if($cat === 'category' || $cat === 'subcategory') echo "required"; ?>
-			 onChange="add('<?php echo $cat;?>')">
+			name="<?php echo $cat; ?>"
+			<?php 
+				if($cat === 'category') echo "onchange=\"addSubmit('$cat',this);\" required";
+				else if($cat === 'subcategory') echo "onchange=\"addSelect('$cat');\" required"; 
+				else echo "onchange=\"addSelect('$cat');\"";
+			?>>
+		<option value=""></option>
 	<?php foreach($enums[$cat] as $e) { ?>
 		<option value="<?php echo $e; ?>" <?php if($e === $item[$cat]) { echo "selected"; } ?>><?php echo $e; ?></option>
 	<?php } ?>
 	</select></td><?php if($i % 2 == 0) { echo "\n\t</tr>\n"; } ?>
 <?php } ?>
 	<tr><td class="button" colspan=4>
-		<button type="submit" name="submit" value="change">Ändern ...</button>
+		<button type="submit" name="submit_edit" value="<?php echo $button_value;?>"><?php echo $button_name;?></button>
 	</td></tr>
 </table>
 </form>
-
+(* = Pflichtfeld)
 

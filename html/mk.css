@@ -1,6 +1,6 @@
 
 html, body { margin: 0; display: flex; justify-content: center; align-items: center; }
-body { display: table-cell; border:2px solid black; padding:0px; margin-top:30px; }
+body { display: table-cell; border:2px solid black; padding:0px; margin-top:30px; margin-bottom:30px; }
 
 /* ################### Allgemeine Einstellungen ############### */
 table { width:100%; }
@@ -34,7 +34,7 @@ option { color: black; background-color:white; padding:2px; margin:2px; font-siz
 
 /* ######################## head.php ####################### */
 
-table.title { width:100%; border:none; background-color:orange; }
+table.title { width:100%; min-width:500px; border:none; background-color:orange; }
 table.title td { border:none }
 button#menu { border:none; font-weight:bold; font-size:24px; }
 table.title td.menu  { width:10%; padding:0px; margin:0px; }
@@ -89,5 +89,7 @@ table.present { width:100%; margin:auto; text-align:left; white-space:nowrap;
 }
 table.present td    { width:300px; padding:10px; border:none; text-align:left; vertical-align:top; white-space:wrap; }
 table.present td.description { text-align:justify; }
+table.present td span#price { padding:5px; border:1px solid black; background-color:white; color:black; }
+table.present td span#stock { padding:5px; border:1px solid black; background-color:white; color:black; }
 
 /* ######################################################################## */

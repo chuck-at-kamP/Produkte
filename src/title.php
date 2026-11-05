@@ -2,7 +2,7 @@
 <tr>
 	<td class=menu><button id="menu">&#9776;</button></td> 
 	<td class="title"><h1><span id="device"> Produkte </span></h1></td>
-	<td> (<?php echo $_SESSION['fullname'];?>) </td>
+	<td class="user"> (<?php echo $user;?>) </td>
 	<td class="image"><img class="title_image" src=""></td>
 </tr>
 </table>
@@ -13,7 +13,7 @@
 	<a id="menu_item" href="/Produkte/change.php"> Ändern </a>
 	<a id="menu_item" href="/Produkte/delete.php"> Löschen </a>
 	<hr>
-	<a id="menu_item" href="javascript:stop(); javascript:closeSidebar('sidebar')"> Reset </a>
+	<a id="menu_item" href="/Produkte/stats.php"> Statistik </a>
 	<hr>
 	<a id="menu_item" href="/Produkte/login.php"> Login </a>
 	<a id="menu_item" href="/Produkte/logout.php"> Logout </a>
